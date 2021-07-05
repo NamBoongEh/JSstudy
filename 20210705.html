@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Canvas</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      .canvas {
+        background: #eee;
+      }
+    </style>
+  </head>
+
+  <body>
+    <canvas class="canvas" width="700" height="300"></canvas>
+
+    <script>
+      const canvas = document.querySelector(".canvas");
+      const context = canvas.getContext("2d");
+      let xPos = 10;
+
+      // 원을 이용한 호 그리기위한 라디안 공식
+      function radian(degree){
+        return degree * Math.PI / 180;
+      }
+
+      // L 작성
+      // L의 위 꺾인 곡선
+      function drawL() {
+      context.beginPath();
+      context.arc(75, 100, 15, radian(xPos), radian(220), true);
+      context.stroke();
+      }
+
+      // L의 수직 직선
+      function drawL2() {
+        context.beginPath();
+        context.moveTo(75+15, 103);
+        context.lineTo(60, 200);
+        context.stroke();
+        context.closePath();
+      }
+
+      // L의 평행 직선
+      function drawL3() {
+        context.beginPath();
+        context.moveTo(60, 200);
+        context.lineTo(160, 190);
+        context.stroke();
+        context.closePath();
+      }
+
+      drawL();
+      drawL2();
+      drawL3();
+
+    </script>
+  </body>
+</html>
