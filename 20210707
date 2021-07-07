@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        .canvas{
+            width: 1000px;
+            height: 800px;
+            background: #eee;
+        }
+        .imgBtn1, .imgBtn2, .imgBtn3{
+            width: 80px; 
+            height: 80px;
+            background: url("../images/ilbuni1.png") no-repeat 50% 50% / cover;
+        }
+        .imgBtn2{
+            background: url("../images/ilbuni2.png") no-repeat 50% 50% / cover;
+        }
+        .imgBtn3{
+            background: url("../images/ilbuni3.png") no-repeat 50% 50% / cover;
+        }
+    </style>
+</head>
+<body>
+    <h1>위의 공백</h1>
+    <canvas class="canvas" width="2000" height="1600" style="background: #eee;">캔버스를 지원하지않아요</canvas>
+    <div class="buttonBox">
+        <button class="imgBtn1" data-src="../images/ilbuni1.png" onclick=addEvent()></button>
+        <button class="imgBtn2" data-src="../images/ilbuni2.png" onclick=addEvent()></button>
+        <button class="imgBtn3" data-src="../images/ilbuni3.png" onclick=addEvent()></button>
+    </div>
+
+    <script>
+        const canvas = document.querySelector('.canvas');
+        const context = canvas.getContext('2d');
+        const buttonBox = document.querySelector('.buttonBox');
+        let sticker = new Image();
+
+        //현재 커서의 위치
+        let cursorX;
+        let cursorY;
+        
+        //이동, 확대축소하기위한 수정용 x, y 좌표
+        let reX;
+        let reY;
+
+        context.save();
+
+        function check(e){
+            // 우측 상단 삭제 버튼
+            if(e.layerX > cursorX-8 && e.layerX < cursorX+7 && e.layerY > cursorY-8 && e.layerY < cursorY+7){
+                deleteSticker(e.layerX, e.layerY);
+                context.restore();
+            };
+
+            // 우측 하단 resize, rotate 버튼
+            if(e.layerX > cursorX-8 && e.layerX < cursorX+7 && e.layerY > cursorY-8+80 && e.layerY < cursorY+7+80){
+                console.log('resize, rotate 버튼 쪽 성공!');
+                context.resizeStart(e);
+                context.resizeEnd(e);
+            };
+        }
+                
+        
+        //현재 좌표 확인(각 분기별로 나뉘는 곳)
+        function clickHandler(e){
+            // 클릭하면 캔버스의 좌표가 나오게
+            console.log(e);
+            console.log("좌표 레이어X", e.layerX, "좌표 레이어Y", e.layerY);
+            
+            check(e);
+        }
+
+        // 해당하는 좌표에 원하는 스티커가 붙게하기
+        function createSticker(e){
+            context.drawImage(sticker, e.layerX*2-80, e.layerY*2-80, 160, 160);
+
+            //해당 원 눌렀는지 확인용 변수(상위 우측 원 11시 방향 좌표)
+            //캔버스 크기를 두배로 늘렸기때문에 실제 좌표 계산 할 때는 1/2를 해줘야한다
+            cursorX = e.layerX+40;
+            cursorY = e.layerY-40;
+
+            // 좌표 찍은 곳 그대로
+            context.beginPath();
+            context.strokeRect((cursorX-40)*2, (cursorY+40)*2, 10, 10);
+            context.stroke();
+            context.closePath();
+
+            // 좌표 찍은 곳 우측 상단 모서리 지점
+            // context.beginPath();
+            // context.fillRect((cursorX-40)*2+80, (cursorY+40)*2-80, 10, 10);
+            // context.stroke();
+            // context.closePath();
+            
+            createBorder(e);
+
+            canvas.removeEventListener('click', createSticker);
+        }
+
+
+        // 스티커 생성 시 테두리, resize, rotate, delete 단추 생성
+        function createBorder(e){
+            // 해당 스티커 주변에 검은색 테두리
+            context.beginPath();
+            context.strokeRect(e.layerX*2-80, e.layerY*2-80, 160, 160);
+            context.stroke();
+            context.closePath();
+
+            // 해당 스티커 오른쪽 위 삭제 아이콘
+            context.beginPath();
+            context.arc(e.layerX*2+80, e.layerY*2-80, 15, 0, radian(360), false);
+            context.fill();
+            context.closePath();
+
+            // 해당 스티커 오른쪽 아래 회전, resize 아이콘
+            context.beginPath();
+            context.arc(e.layerX*2+80, e.layerY*2+80, 15, 0, radian(360), false);
+            context.fill();
+            context.closePath();
+        }
+
+
+        // 해당 스티커 오른쪽 위 '삭제' 원 눌렀을 때 삭제
+        function deleteSticker(customX, customY){
+            context.clearRect(cursorX*2-160, cursorY*2, 160, 160);
+        }
+
+        // 원 그릴때 라디안 'x도'로 변경
+        function radian(degree){
+            return degree * Math.PI / 180;
+        }
+
+        //해당하는 스티커 선택
+        function setSticker(e){
+            const choose = e.target;
+            console.log(choose);
+
+            sticker.src = choose.getAttribute('data-src');
+
+            console.log(sticker);
+        }
+
+        // 해당 스티커 크기 조절
+        function resizeStart(e){
+            console.log('이동 시작', e.layerX, e.layerY);
+            reX = e.layerX;
+            reY = e.layerY;
+        }
+        function resizeEnd(e){
+            console.log('이동 끝', e.layerX, e.layerY);
+            reX = e.layerX - reX;
+            reY = e.layerY - reY;
+            console.log('이동 결과', reX, reY);
+        }
+
+
+        // 스티커 클릭 후 1회만 이벤트를 등록하기 위함
+        function addEvent(){
+            canvas.addEventListener('click', createSticker);
+        }
+
+        canvas.addEventListener('click', clickHandler);
+        canvas.addEventListener('mousedown', resizeStart);
+        canvas.addEventListener('mouseup', resizeEnd);
+        buttonBox.addEventListener('click', setSticker);
+    </script>
+    
+</body>
+</html>
