@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>사진 고르기</title>
+
+    <style>
+        .container{
+            width: 500vw;
+            transition: ease-in-out 0.5s;
+            text-align: center;
+        }
+        .inner{
+            width: 100vw;
+            float: left;
+        }
+        .inner img{
+            width: 70%;
+        }
+        .button{
+            transform: translateY(-11rem);
+            text-align: center;
+        }
+        .pic1, .pic2, .pic3, .pic4, .pic5{
+            display: inline-flex;
+            border: none;
+            background: black;
+            cursor: pointer;
+            border-radius: 5px;
+            width: 4%;
+            height: 10px;
+            margin-right: 0.4%;
+        }
+        .left, .right {
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 100px;
+            color: black;
+            transform: translate(15vw, -26rem);
+        }
+        .right{
+            transform: translate(77.4vw, -26rem);
+        }
+
+    </style>
+</head>
+<body style="margin: 0;">
+    <div style="overflow: hidden;">
+        <div class="container">
+            <div class="inner">
+                <img id="pic1" src="../images/pic1.png">
+            </div>
+            <div class="inner">
+                <img id="pic2" src="../images/pic2.png">
+            </div>
+            <div class="inner">
+                <img id="pic3" src="../images/pic3.png">
+            </div>
+            <div class="inner">
+                <img id="pic4" src="../images/pic4.png">
+            </div>
+            <div class="inner">
+                <img id="pic5" src="../images/pic5.png">
+            </div>
+        </div>
+    </div>
+
+    <button class="left"><</button>
+    <button class="right">></button>
+
+    <div class="button">
+        <button class="pic1"></button>
+        <button class="pic2"></button>
+        <button class="pic3"></button>
+        <button class="pic4"></button>
+        <button class="pic5"></button>
+    </div>
+
+    <div style="text-align: center;">
+        <button id="choose" style="border: none; border-radius: 5px; background: black; color: white; font-size: 30px; padding: 0 10px; cursor: pointer;">사진 선택</button>
+    </div>
+
+
+    <script>
+        //버튼에 따른 사진의 이동
+        document.querySelector('.pic1').addEventListener('click', function(){
+            document.querySelector('.container').style.transform = 'translate(0vw)';
+            document.querySelector('.container').id = document.querySelector('#pic1').id;
+        });
+
+        document.querySelector('.pic2').addEventListener('click', function(){
+            document.querySelector('.container').style.transform = 'translate(-100vw)';
+            document.querySelector('.container').id = document.querySelector('#pic2').id;
+        });
+
+        document.querySelector('.pic3').addEventListener('click', function(){
+            document.querySelector('.container').style.transform = 'translate(-200vw)';
+            document.querySelector('.container').id = document.querySelector('#pic3').id;
+        });
+
+        document.querySelector('.pic4').addEventListener('click', function(){
+            document.querySelector('.container').style.transform = 'translate(-300vw)';
+            document.querySelector('.container').id = document.querySelector('#pic4').id;
+        });
+
+        document.querySelector('.pic5').addEventListener('click', function(){
+            document.querySelector('.container').style.transform = 'translate(-400vw)';
+            document.querySelector('.container').id = document.querySelector('#pic5').id;
+        });
+
+        //왼쪽 이동 버튼
+        document.querySelector('.left').addEventListener('click', function(){
+            //왼쪽 버튼이 움직일 수 없는 경우 : 현재 첫번째 그림을 보고있을 경우(즉, pic1일땐 작동이 안되게하면 된다.)
+            if(document.querySelector('.container').id !== 'pic1'){
+                document.querySelector('.container').style.transform = `translate(${(document.querySelector('.container').id.slice(3)-2)*(-100)}vw)`;
+                document.querySelector('.container').id = `pic${(document.querySelector('.container').id.slice(3)-1)}`;
+            }
+        });
+
+        //오른쪽 이동 버튼
+        document.querySelector('.right').addEventListener('click', function(){
+            //왼쪽 버튼이 움직일 수 없는 경우 : 현재 첫번째 그림을 보고있을 경우(즉, pic1일땐 작동이 안되게하면 된다.)
+            if(document.querySelector('.container').id !== 'pic5'){
+                document.querySelector('.container').style.transform = `translate(${(document.querySelector('.container').id.slice(3))*(-100)}vw)`;
+                document.querySelector('.container').id = `pic${(document.querySelector('.container').id.slice(3)*1+1)}`;
+            }
+        });
+
+        document.querySelector('#choose').addEventListener('click', function(){
+            let choosepic = document.querySelector('.container').id;
+            console.log(choosepic);
+            console.log(document.querySelectorAll(`${choosepic}`));
+        })
+
+    </script>
+</body>
+</html>

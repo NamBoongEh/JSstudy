@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        canvas{
+            background: #eee;
+        }
+    </style>
+</head>
+<body>
+    <canvas class="canvas" width="600" height="400">
+        이 브라우저는 캔버스를 지원하지 않습니다.
+    </canvas>
+
+    <script>
+        // fillRect
+        // 그림 채우기
+
+        // clearRect
+        // 그림 지우기
+
+        // strokeRect
+        // 선을 그리기
+
+
+
+
+
+        // ****** 기본적으로 해야할 것
+
+        // 캔버스 가져오기
+        const canvas = document.querySelector('.canvas');
+        // 그림을 그릴 때 context를 통해 그림
+        const context = canvas.getContext('2d');
+
+        console.log(context);
+
+
+
+
+
+        // ***** 그림처럼 생각하기
+
+        // 처음 그림을 그림
+        // 기본적으로 검은색 물감
+        context.fillRect(50, 50, 100, 100);
+
+        // 캔버스의 그림 색상 변경(색상명, hex, rgba 다 가능)
+        // 두번째 그림을 그림
+        // 붓에 빨간색을 찍음
+        context.fillStyle = 'red';
+        // 캔버스 그림 그릴 위치 x, y, width, height
+        context.fillRect(0, 0, 100, 100);
+
+        // 세번째를 첫번째꺼에 그리니 덮어버림
+        context.fillStyle = 'blue';
+        context.fillRect(50, 50, 100, 100);
+
+        context.clearRect(30, 30, 80, 80);
+
+        context.strokeRect(150, 150, 100, 100);
+    </script>
+    
+</body>
+</html>

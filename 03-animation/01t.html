@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Canvas</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      .canvas {
+        background: #eee;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>requestAnimationFrame</h1>
+    <canvas class="canvas" width="500" height="300"></canvas>
+
+    <script>
+      const canvas = document.querySelector('.canvas');
+      const context = canvas.getContext('2d');
+
+      let xPos = 10;
+      let yPos = 150;
+      let count = 0;
+
+      function draw(){
+        count++;
+        console.log(count);
+
+        // count를 30으로 나눠서 나머지가 0이 될 때만 움직이게 해달라
+        if(count % 30 === 0){
+    
+            // 캔버스 초기화(그림을 지워야해서)
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            // 캔버스 그리기 시작
+            context.beginPath();
+    
+            // 원 중앙의 x, 원 중앙의 y, 반지름, 호 시작, 호 끝, 시계or반시계
+            context.arc(xPos, yPos, 10, 0, 2*Math.PI, false);
+            context.fill();
+            xPos += 5;
+            yPos -= 1;
+        }
+
+        //자기 자신을 다시 콜백 시키면서 계속해서 함수 반복 시킨다.
+        //이 때 값을 바꾸게 만들면 계속 변경되며 애니메이션이 된다.
+        requestAnimationFrame(draw);
+      }
+
+
+
+      draw();
+
+    </script>
+  </body>
+</html>
+
+
+
+
+
+
+
+
+
