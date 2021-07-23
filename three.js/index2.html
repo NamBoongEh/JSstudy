@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>threejs-primitives</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+      }
+      cnavas {
+        height: 100%;
+        width: 100%;
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="c"></canvas>
+    <script type="module">
+      import * as THREE from "./three.module.js";
+
+      function main() {
+        const canvas = document.querySelector("c");
+        const renderer = new THREE.WebGLRender({ canvas });
+
+        const fov = 75;
+        const aspect = 2;
+        const near = 0.1;
+        const far = 5;
+        const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+        camera.position.z = 2;
+
+        const scene = new THREE.scene();
+        {
+          const color = 0xffffff;
+          const intensity = 1;
+          const light = new THREE.DirectionalLight(color, intensity);
+          light.position.set(1, -2, -4);
+          scene.add(light);
+        }
+
+        const objects = [];
+        const spread = 15;
+
+        function addObject(x, y, obj) {
+          obj.position.x = x * spread;
+          obj.position.y = y * spread;
+
+          scene.add(obj);
+          objects.push(obj);
+        }
+      }
+
+      main();
+    </script>
+  </body>
+</html>
