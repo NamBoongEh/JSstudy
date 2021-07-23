@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Canvas</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      .canvas {
+        background: #eee;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Transform</h1>
+    <canvas class="canvas" width="500" height="500"></canvas>
+
+    <script>
+      const canvas = document.querySelector('.canvas');
+      const context = canvas.getContext('2d');
+      let scaleValue = 1;
+      // 회전은 라디안
+      let rotationValue = 0;
+
+      function radian(degree){
+        return degree * Math.PI / 180;
+      }
+
+      function draw(){
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        // 기준점을 저장시켜서 그 자리에서 확대가 되게 만듬
+        context.save();
+        // 변환 초기화
+        context.setTransform(1, 0, 0, 1, 0, 0);
+        // 중심 좌표점 옮기기
+        context.translate(350, 350);
+        context.scale(scaleValue, scaleValue);
+        context.rotate(rotationValue);
+        // scaleValue += 0.01;
+        // 여기에서도 마찬가지로 라디안의 영향을 받음
+        // 1도씩 돌아가도록 라디안 함수롤 넣어가지고 돌린다
+        rotationValue += radian(1);
+
+        // 마지막으로 그려주는 것(이걸 안하면 아무것도 안된다)
+        context.strokeRect(-50, -50, 100, 100);
+        // 저장한 기준점을 가져와서 그자리에 계속 만드는것
+        context.restore();
+
+
+        requestAnimationFrame(draw);
+      }
+
+      draw();
+    </script>
+  </body>
+</html>
+
+
+
+
+
+
+
+
+

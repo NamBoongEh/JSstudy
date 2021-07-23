@@ -1,0 +1,83 @@
+
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+    <style>
+        .canvas{
+            width: 1000px;
+            height: 800px;
+            background: #eee;
+        }
+        .imgBtn1, .imgBtn2, .imgBtn3{
+            width: 80px; 
+            height: 80px;
+            background: url("../images/ilbuni1.png") no-repeat 50% 50% / cover;
+        }
+        .imgBtn2{
+            background: url("../images/ilbuni2.png") no-repeat 50% 50% / cover;
+        }
+        .imgBtn3{
+            background: url("../images/ilbuni3.png") no-repeat 50% 50% / cover;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>위의 공백</h1>
+    <canvas class="canvas" width="2000" height="1600" style="background: #eee;">캔버스를 지원하지않아요</canvas>
+    <div class="buttonBox">
+        <button class="imgBtn1" data-src="../images/ilbuni1.png" onclick=addEvent()></button>
+        <button class="imgBtn2" data-src="../images/ilbuni2.png" onclick=addEvent()></button>
+        <button class="imgBtn3" data-src="../images/ilbuni3.png" onclick=addEvent()></button>
+    </div>
+  <img src="https://js.cx/clipart/ball.svg" style="cursor:pointer" width="40" height="40" id="ball">
+
+
+  <script>
+    ball.onmousedown = function(event) {
+
+      let shiftX = event.clientX - ball.getBoundingClientRect().left;
+      let shiftY = event.clientY - ball.getBoundingClientRect().top;
+
+      ball.style.position = 'absolute';
+      ball.style.zIndex = 1000;
+      document.body.append(ball);
+
+      moveAt(event.pageX, event.pageY);
+
+      function moveAt(pageX, pageY) {
+        ball.style.left = pageX - shiftX + 'px';
+        ball.style.top = pageY - shiftY + 'px';
+      }
+
+      function onMouseMove(event) {
+        moveAt(event.pageX, event.pageY);
+      }
+
+      document.addEventListener('mousemove', onMouseMove);
+
+      ball.onmouseup = function() {
+        document.removeEventListener('mousemove', onMouseMove);
+        ball.onmouseup = null;
+      };
+
+    };
+
+    ball.ondragstart = function() {
+      return false;
+    };
+
+    function addEvent(){
+      
+      let sticker = document.createElement('img');
+      let att = document.createAttribute('class');
+      att.value = className;
+      sticker.setAttributeNode(att);
+    }
+  </script>
+
+
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Canvas</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      canvas {
+        background: #eee;
+      }
+      .color-btn{
+        width: 30px;
+        height: 30px;
+        border: 0;
+        border-radius: 50%;
+      }
+      /** 버튼에 따른 색 변경 **/
+      .color-btn[data-color='black'] {background: black;}
+      .color-btn[data-color='red'] {background: red;}
+      .color-btn[data-color='green'] {background: green;}
+      .color-btn[data-color='blue'] {background: blue;}
+      /** 버튼 클릭시 이미지로 변경 **/
+      .image-btn{
+        width: 40px;
+        height: 40px;
+        background: url(../images/ilbuni2.png) no-repeat 50% 50% / cover;
+      }
+      /** 이미지 저장한 그림 위치 조정 관련(현재는 그냥 밑에 출력) **/
+      .result-image{
+      }
+    </style>
+  </head>
+
+  <body>
+    <canvas class="canvas" width="600" height="400">이 브라우저는 캔버스를 지원하지 않습니다.</canvas>
+    <div class="control">
+      <button class="color-btn" data-type="color" data-color="black"></button>
+      <button class="color-btn" data-type="color" data-color="red"></button>
+      <button class="color-btn" data-type="color" data-color="green"></button>
+      <button class="color-btn" data-type="color" data-color="blue"></button>
+      <button class="image-btn" data-type="image"></button>
+  <img src="https://js.cx/clipart/ball.svg" style="cursor:pointer" width="40" height="40" id="ball">
+      <button class="save-btn">이미지 저장</button>
+      <div class="result-image"></div>
+
+    </div>
+
+    <script>
+      const canvas = document.querySelector('.canvas');
+      const context = canvas.getContext('2d');
+      const control = document.querySelector('.control');
+      const saveBtn = document.querySelector('.save-btn');
+      const resultImage = document.querySelector('.result-image');
+      let drawingMode; // true일 때만 그리기
+      let brush = 'color'; // 'color', 'image' 상황에 따라 모드 변경
+      let colorVal = 'black' //기본 색상 셋팅
+
+      // 이미지 가져오기
+      const imgElem = new Image();
+      imgElem.src = '../images/ilbuni2.png';
+
+      function downHandler(){
+        drawingMode = true;
+      }
+
+      function upHandler(){
+        drawingMode = false;
+      }
+
+      function moveHandler(e) {
+        // 드로잉모드로 마우스를 누를때만 그리게하고 마우스를 때면 false가 되게 함
+        if(!drawingMode) return;
+
+        //스위치에 따른 이미지와 색상의 변화로 그림 그리기
+        switch(brush){
+          case 'color' :
+            context.beginPath();
+            context.arc(e.layerX, e.layerY, 10, 0, Math.PI*2, false);
+            context.fill();
+            break;
+          case 'image' :
+            context.drawImage(imgElem, e.layerX, e.layerY, 50, 50);
+            break;
+        }
+
+        // clientY는 캔버스 제일 위쪽이 0이 아니라 전체 화면을 기준으로 맨 위가 0이다.
+        // console.log(e.clientY);
+        // layerY는 캔버스 제일 위쪽이 0
+        // console.log(e.layerY);
+
+      }
+
+      // 이벤트 객체의 타겟으로 이벤트를 위임해줘야한다.
+      function setColor(e){
+        brush = e.target.getAttribute('data-type');
+        colorVal = e.target.getAttribute('data-color');
+        //색 변경 이벤트
+        context.fillStyle = colorVal;
+
+        console.log(brush);
+      }
+
+      // 이미지 저장하기
+      function createImage(){
+        const url = canvas.toDataURL('image/png');
+        const imgElem = new Image();
+        imgElem.src = url;
+        resultImage.appendChild(imgElem);
+        console.log(url);
+      }
+
+      canvas.addEventListener('mousedown', downHandler);
+      canvas.addEventListener('mousemove', moveHandler);
+      canvas.addEventListener('mouseup', upHandler);
+      control.addEventListener('click', setColor);
+      saveBtn.addEventListener('click', createImage);
+
+    </script>
+
+  <script>
+    ball.onmousedown = function(event) {
+
+      let shiftX = event.clientX - ball.getBoundingClientRect().left;
+      let shiftY = event.clientY - ball.getBoundingClientRect().top;
+
+      ball.style.position = 'absolute';
+      ball.style.zIndex = 1000;
+      document.body.append(ball);
+
+      moveAt(event.pageX, event.pageY);
+
+      function moveAt(pageX, pageY) {
+        ball.style.left = pageX - shiftX + 'px';
+        ball.style.top = pageY - shiftY + 'px';
+      }
+
+      function onMouseMove(event) {
+        moveAt(event.pageX, event.pageY);
+      }
+
+      document.addEventListener('mousemove', onMouseMove);
+
+      ball.onmouseup = function() {
+        document.removeEventListener('mousemove', onMouseMove);
+        ball.onmouseup = null;
+      };
+
+    };
+
+    ball.ondragstart = function() {
+      return false;
+    };
+
+    function addEvent(){
+      
+      let sticker = document.createElement('img');
+      let att = document.createAttribute('class');
+      att.value = className;
+      sticker.setAttributeNode(att);
+    }
+  </script>
+
+
+</body>
+</html>
