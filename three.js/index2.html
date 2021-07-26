@@ -8,7 +8,7 @@
         margin: 0;
         height: 100%;
       }
-      cnavas {
+      canvas {
         height: 100%;
         width: 100%;
         display: block;
@@ -21,35 +21,212 @@
       import * as THREE from "./three.module.js";
 
       function main() {
-        const canvas = document.querySelector("c");
-        const renderer = new THREE.WebGLRender({ canvas });
+        const canvas = document.querySelector("#c");
+        const renderer = new THREE.WebGLRenderer({ canvas });
 
-        const fov = 75;
-        const aspect = 2;
-        const near = 0.1;
-        const far = 5;
+        const fov = 80; //시야각
+        const aspect = 2; //canvas 가로 세로 비율
+        const near = 0.1; // 절두체 앞부분 보이는 시야
+        const far = 1000; // 절두체 뒷부분 보이는 시야
         const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-        camera.position.z = 2;
+        camera.position.z = 20;
 
-        const scene = new THREE.scene();
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xaaaaaaa);
+        // 물체가 3차원으로 보일 수 있게 조명을 비춰주는 것
         {
-          const color = 0xffffff;
+          const color = 0xcccccc;
           const intensity = 1;
           const light = new THREE.DirectionalLight(color, intensity);
-          light.position.set(1, -2, -4);
+          light.position.set(20, 2, 10);
           scene.add(light);
         }
 
-        const objects = [];
-        const spread = 15;
+        const geometry = new THREE.BoxGeometry(
+          2,
+          3,
+          2
+          //width, height, depth
+        );
+        const geometry2 = new THREE.BoxGeometry(
+          1,
+          1,
+          1,
+          50,
+          50,
+          50
+          //width, height, depth, widthSegments, heightSegments, depthSegments
+        );
+        const geometry3 = new THREE.CircleGeometry(
+          1,
+          50
+          //radius, ssegments
+        );
+        const geometry4 = new THREE.CircleGeometry(
+          1,
+          50,
+          Math.PI * 0.6,
+          Math.PI * 1.62
+          //radius, segments, thetaStart, thetalLength
+        );
+        const geometry5 = new THREE.ConeGeometry(
+          1,
+          2,
+          10
+          //radius, height, segments
+        );
+        const geometry6 = new THREE.ConeGeometry(
+          1,
+          1,
+          50,
+          50,
+          false,
+          Math.PI * 0.3,
+          Math.PI * 1.22
+          //radius, height, segments, heightSegments, openEnded 뚜껑 여부, thetaStart, thetalLength
+        );
+        const geometry7 = new THREE.CylinderGeometry(
+          2,
+          1,
+          1.5,
+          20
+          //radiusTop, radiusBottom, height, radialSegments
+        );
+        const geometry8 = new THREE.CylinderGeometry(
+          1,
+          1,
+          1.5,
+          20,
+          50,
+          false,
+          Math.PI * 0.65,
+          Math.PI * 1.1
+          //radiusTop, radiusBottom, height, radialSegments, heightSegments 크기에 별 차이가 없음, openEnded, thetaStart, thetaLenght
+        );
+        const geometry9 = new THREE.DodecahedronGeometry(1.2);
+        const geometry10 = new THREE.DodecahedronGeometry(2, 2);
 
-        function addObject(x, y, obj) {
-          obj.position.x = x * spread;
-          obj.position.y = y * spread;
+        function threeD(geometry, color, x, y) {
+          // 조명 비추면 Basic -> Phong으로 바꿔야함.
+          // const material = new THREE.MeshBasicMaterial({ color: 0x44aa88 });
+          const material = new THREE.MeshPhongMaterial({ color });
 
-          scene.add(obj);
-          objects.push(obj);
+          //넓이 높이 다 넣은 geometry랑,  색, 밝기, 질감 넣는 material 합침
+          const primitives = new THREE.Mesh(geometry, material);
+          scene.add(primitives);
+
+          primitives.position.x = x;
+          primitives.position.y = y;
+
+          return primitives;
         }
+
+        function twoDotFiveD(geometry, color, x, y) {
+          const material = new THREE.MeshLambertMaterial({ color });
+
+          //넓이 높이 다 넣은 geometry랑,  색, 밝기, 질감 넣는 material 합침
+          const primitives = new THREE.Mesh(geometry, material);
+          scene.add(primitives);
+
+          primitives.position.x = x;
+          primitives.position.y = y;
+
+          return primitives;
+        }
+
+        function twoD(geometry, color, x, y) {
+          const material = new THREE.MeshBasicMaterial({ color });
+
+          const primitives = new THREE.Mesh(geometry, material);
+          scene.add(primitives);
+
+          primitives.position.x = x;
+          primitives.position.y = y;
+
+          return primitives;
+        }
+
+        function makeInstance(geometry, color, x, y) {
+          return threeD(geometry, color, x, y);
+        }
+        function makeInstance2(geometry2, color, x, y) {
+          return twoDotFiveD(geometry2, color, x, y);
+        }
+        function makeInstanceCircle(geometry3, color, x, y) {
+          return threeD(geometry3, color, x, y);
+        }
+        function makeInstanceCircle2(geometry4, color, x, y) {
+          return twoD(geometry4, color, x, y);
+        }
+        function makeInstanceCone(geometry5, color, x, y) {
+          return threeD(geometry5, color, x, y);
+        }
+        function makeInstanceCone2(geometry6, color, x, y) {
+          return twoDotFiveD(geometry6, color, x, y);
+        }
+        function makeInstanceCylinder(geometry7, color, x, y) {
+          return threeD(geometry7, color, x, y);
+        }
+        function makeInstanceCylinder2(geometry8, color, x, y) {
+          return threeD(geometry8, color, x, y);
+        }
+        function makeInstanceDodecahedron(geometry9, color, x, y) {
+          return twoDotFiveD(geometry9, color, x, y);
+        }
+        function makeInstanceDodecahedron2(geometry10, color, x, y) {
+          return twoDotFiveD(geometry10, color, x, y);
+        }
+
+        // 내가 만들 여러 물체들
+        const primitives = [
+          makeInstance(geometry, 0x44aa88, -3, 0), //육면체
+          makeInstance2(geometry2, 0x44aa88, 0, 0), //육면체
+          makeInstanceCircle(geometry3, 0x44aa88, 3, 0), //원
+          makeInstanceCircle2(geometry4, 0x44aa88, -3, -3), //팩맨
+          makeInstanceCone(geometry5, 0x44aa88, 0, -3), //원뿔
+          makeInstanceCone2(geometry6, 0x44aa88, 3, -3), //누군가가 파먹은 원뿔
+          makeInstanceCylinder(geometry7, 0x44aa88, 7, -3), //원기둥
+          makeInstanceCylinder2(geometry8, 0x44aa88, 7, 1), //누군가가 파먹은 원기둥
+          makeInstanceDodecahedron(geometry9, 0x44aa88, 7, 4), //12면체
+          makeInstanceDodecahedron2(geometry10, 0x44aa88, 3, 4), //동글동글한 12면체
+        ];
+
+        // 물체가 깨지지않도록 캔버스 사이즈에 따라 리사이즈 해줌
+        function resizeRendererToDisplaySize(renderer) {
+          const canvas = renderer.domElement;
+          const width = canvas.clientWidth;
+          const height = canvas.clientHeight;
+          const needResize = canvas.width !== width || canvas.height !== height;
+          if (needResize) {
+            renderer.setSize(width, height, false);
+          }
+
+          return needResize;
+        }
+
+        // 물체를 돌게 만드는 애니메이션
+        function render(time) {
+          time *= 0.0005;
+
+          if (resizeRendererToDisplaySize(renderer)) {
+            // 창 크기에 따라 도형도 비율 맞추기
+            const canvas = renderer.domElement;
+            camera.aspect = canvas.clientWidth / canvas.clientHeight;
+            camera.updateProjectionMatrix();
+          }
+
+          primitives.forEach((cube, ndx) => {
+            const speed = 1 + ndx * 0.1;
+            const rot = time * speed;
+            cube.rotation.x = rot;
+            cube.rotation.y = rot;
+          });
+
+          renderer.render(scene, camera);
+
+          requestAnimationFrame(render);
+        }
+        requestAnimationFrame(render);
       }
 
       main();
