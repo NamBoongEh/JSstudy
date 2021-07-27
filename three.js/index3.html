@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+      }
+      canvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="c"></canvas>
+
+    <script type="module">
+      import * as THREE from "./three.module.js";
+
+      function main() {
+        const canvas = document.querySelector("#c");
+        const renderer = new THREE.WebGLRenderer({ canvas });
+
+        const fov = 80; //시야각
+        const aspect = 2; //cavas 가로 세로 비율
+        const near = 0.1; // 절두체 앞부분
+        const far = 1000; // 절두체 뒷부분
+        const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+        camera.position.z = 5;
+
+        const scene = new THREE.Scene();
+        // 똥을 놓을 공간
+
+        // 똥이 3차원으로 보일 수 있도록 조명을 놓는 곳
+        {
+          const color = 0xffffff;
+          const intensity = 1;
+          const light = new THREE.DirectionalLight(color, intensity);
+          light.position.set(20, 2, 10);
+
+          //정말 직관적이다. 빛을 추가해주자.
+          scene.add(light);
+        }
+
+        const geometry = new THREE.BoxGeometry(1, 1, 1);
+        //width, height, depth 순서
+
+        // const material = new THREE.MeshBasicMaterial({ color: 0x44aa88 });
+        const material = new THREE.MeshPhongMaterial({ color: 0x44aa88 });
+        const cube = new THREE.Mesh(geometry, material);
+
+        scene.add(cube);
+
+        function resizeRendererToDisplaySize(renderer) {
+          const canvas = renderer.domElement;
+          const pixelRatio = window.devicePixelRatio;
+          const width = (canvas.clientWidth * pixelRatio) | 0;
+          const height = (canvas.clientHeight * pixelRatio) | 0;
+          const needResize = canvas.width !== width || canvas.height !== height;
+
+          if (needResize) {
+            renderer.setSize(width, height, false);
+          }
+        }
+
+        // 똥을 움직이게 만드는 애니메이션
+        function render(time) {
+          time *= 0.001;
+
+          if (resizeRendererToDisplaySize(renderer)) {
+            const canvas = renderer.domElement;
+            camera.aspect = canvas.clientWidth / canvas.clientHeight;
+            camera.updateProjectionMatrix();
+          }
+
+          cube.rotation.x = time;
+          cube.rotation.y = time;
+
+          renderer.render(scene, camera);
+
+          requestAnimationFrame(render);
+        }
+        // 무한 루프에 빠지게한다.
+        requestAnimationFrame(render);
+      }
+
+      main();
+    </script>
+  </body>
+</html>
