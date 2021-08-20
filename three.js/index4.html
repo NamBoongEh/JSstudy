@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Document</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+      }
+      canvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="c"></canvas>
+  </body>
+  <script type="module">
+    import * as THREE from "./three.module.js";
+    import { OrbitControls } from "https://threejsfundamentals.org/threejs/resources/threejs/r127/examples/jsm/controls/OrbitControls.js";
+    import { GUI } from "https://threejsfundamentals.org/threejs/../3rdparty/dat.gui.module.js";
+
+    function main() {
+      const canvas = document.querySelector("#c");
+      const renderer = new THREE.WebGLRenderer({ canvas });
+
+      const fov = 40;
+      const aspect = 2;
+      const near = 0.1;
+      const far = 1000;
+
+      const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+      camera.position.set(0, 200, 0);
+      camera.up.set(0, 0, 1);
+      camera.lookAt(0, 0, 0);
+
+      const controls = new OrbitControls(camera, canvas);
+      controls.target.set(0, 10, 0);
+      controls.update();
+
+      const scene = new THREE.Scene();
+      {
+        const color = "white";
+        const intensity = 5;
+        const light = new THREE.PointLight(color, intensity);
+        scene.add(light);
+      }
+      // 회전 값을 업데이트 할 객체
+      const objects = [];
+
+      // 하나의 geometry로 모든 태양, 지구, 달을 생성
+      const radius = 1;
+      const widthSegments = 100;
+      const heightSements = 100;
+      const sphereGeometry = new THREE.SphereGeometry(
+        radius,
+        widthSegments,
+        heightSements
+      );
+
+      //토성고리, 소행성지대 용도
+      const radius2 = 4;
+      const tubeRadius = 0.5;
+      const radialSegments = 3;
+      const tubularSegments = 62;
+      const torusgeometry = new THREE.TorusGeometry(
+        radius2,
+        tubeRadius,
+        radialSegments,
+        tubularSegments
+      );
+
+      const torusgeometry2 = new THREE.TorusGeometry(
+        radius2 + 20,
+        tubeRadius + 0.5,
+        radialSegments,
+        tubularSegments + 150
+      );
+
+      const torusgeometry3 = new THREE.TorusGeometry(
+        radius2 + 21,
+        tubeRadius + 0.5,
+        radialSegments + 1,
+        tubularSegments + 100
+      );
+
+      //태양 중심
+      const solarSystem = new THREE.Object3D();
+      scene.add(solarSystem);
+      objects.push(solarSystem);
+
+      //태양
+      const sunMaterial = new THREE.MeshPhongMaterial({ emissive: "yellow" });
+      const sunMesh = new THREE.Mesh(sphereGeometry, sunMaterial);
+      sunMesh.scale.set(5, 5, 5);
+      // scene.add(sunMesh);
+      solarSystem.add(sunMesh);
+      objects.push(sunMesh);
+
+      //수성
+      const mercuryMaterial = new THREE.MeshPhongMaterial({
+        color: "darkgray",
+        emissive: "darkgray",
+      });
+      const mercuryMesh = new THREE.Mesh(sphereGeometry, mercuryMaterial);
+      mercuryMesh.scale.set(0.5, 0.5, 0.5);
+      mercuryMesh.position.x = 6;
+      mercuryMesh.position.z = -2;
+      solarSystem.add(mercuryMesh);
+      objects.push(mercuryMesh);
+
+      //금성
+      const venusMaterial = new THREE.MeshPhongMaterial({
+        color: "orange",
+        emissive: "darkorange",
+      });
+      const venusMesh = new THREE.Mesh(sphereGeometry, venusMaterial);
+      venusMesh.position.x = 8;
+      venusMesh.position.z = 8;
+      solarSystem.add(venusMesh);
+      objects.push(venusMesh);
+
+      //지구 중심
+      const earthSystem = new THREE.Object3D();
+      earthSystem.position.x = 18;
+      earthSystem.position.z = 10;
+      solarSystem.add(earthSystem);
+      objects.push(earthSystem);
+
+      //지구
+      const earthMaterial = new THREE.MeshPhongMaterial({
+        color: "skyblue",
+        emissive: "darkblue",
+      });
+      const earthMesh = new THREE.Mesh(sphereGeometry, earthMaterial);
+      // sunMesh.add(earthMesh);
+      earthSystem.add(earthMesh);
+      objects.push(earthMesh);
+
+      //달
+      const moonMaterial = new THREE.MeshPhongMaterial({
+        color: "gray",
+        emissive: "darkgray",
+      });
+      const moonMesh = new THREE.Mesh(sphereGeometry, moonMaterial);
+      moonMesh.position.x = 3;
+      moonMesh.scale.set(0.5, 0.5, 0.5);
+      earthSystem.add(moonMesh);
+      objects.push(moonMesh);
+
+      //화성
+      const marsMaterial = new THREE.MeshPhongMaterial({
+        color: "brown",
+        emissive: "brown",
+      });
+      const marsMesh = new THREE.Mesh(sphereGeometry, marsMaterial);
+      marsMesh.position.x = -14;
+      marsMesh.position.y = 2;
+      solarSystem.add(marsMesh);
+      objects.push(marsMesh);
+
+      //소행성지대
+      const asteroidBeltMaterial = new THREE.PointsMaterial({
+        color: "darkgray",
+        sizeAttenuation: false,
+      });
+      const asteroidBeltMesh = new THREE.Points(
+        torusgeometry2,
+        asteroidBeltMaterial
+      );
+      solarSystem.add(asteroidBeltMesh);
+      objects.push(asteroidBeltMesh);
+      const asteroidBeltMesh2 = new THREE.Points(
+        torusgeometry3,
+        asteroidBeltMaterial
+      );
+      solarSystem.add(asteroidBeltMesh2);
+      objects.push(asteroidBeltMesh2);
+
+      //목성 중심
+      const jupiterSystem = new THREE.Object3D();
+      jupiterSystem.position.x = -24;
+      jupiterSystem.position.z = -20;
+      solarSystem.add(jupiterSystem);
+      objects.push(jupiterSystem);
+
+      //목성
+      const jupiterMaterial = new THREE.MeshPhongMaterial({
+        color: "brown",
+        emissive: "Wheat",
+      });
+      const jupiterMesh = new THREE.Mesh(sphereGeometry, jupiterMaterial);
+      jupiterMesh.scale.set(3, 3, 3);
+      jupiterSystem.add(jupiterMesh);
+      objects.push(jupiterMesh);
+
+      //목성 위성(세라스)
+      const ceresMaterial = new THREE.MeshPhongMaterial({
+        color: "maroon",
+        emissive: "maroon",
+      });
+      const ceresMesh = new THREE.Mesh(sphereGeometry, ceresMaterial);
+      ceresMesh.position.x = 4;
+      ceresMesh.position.y = 7;
+      ceresMesh.scale.set(0.4, 0.4, 0.4);
+      jupiterSystem.add(ceresMesh);
+      objects.push(ceresMesh);
+
+      //토성 중심
+      const saturnSystem = new THREE.Object3D();
+      saturnSystem.position.x = -35;
+      saturnSystem.position.y = 30;
+      saturnSystem.position.z = 20;
+      solarSystem.add(saturnSystem);
+      objects.push(saturnSystem);
+
+      //토성
+      const saturnMaterial = new THREE.MeshPhongMaterial({
+        color: "sienna",
+        emissive: "sienna",
+      });
+      const saturnMesh = new THREE.Mesh(sphereGeometry, saturnMaterial);
+      saturnMesh.scale.set(2.5, 2.5, 2.5);
+      saturnSystem.add(saturnMesh);
+      objects.push(saturnMesh);
+
+      //토성고리
+      const saturnRoundMaterial = new THREE.PointsMaterial({
+        color: "brown",
+        sizeAttenuation: false,
+      });
+      const saturnRoundMesh = new THREE.Points(
+        torusgeometry,
+        saturnRoundMaterial
+      );
+      saturnSystem.add(saturnRoundMesh);
+      objects.push(saturnRoundMesh);
+
+      //천왕성
+      const uranusMaterial = new THREE.MeshPhongMaterial({
+        color: "aqua",
+        emissive: "dodgerblue",
+      });
+      const uranusMesh = new THREE.Mesh(sphereGeometry, uranusMaterial);
+      uranusMesh.scale.set(1.4, 1.4, 1.4);
+      uranusMesh.position.x = 45;
+      uranusMesh.position.y = 35;
+      solarSystem.add(uranusMesh);
+      objects.push(uranusMesh);
+
+      //해왕성
+      const neptuneMaterial = new THREE.MeshPhongMaterial({
+        color: "midnightblue",
+        emissive: "midnightblue",
+      });
+      const neptuneMesh = new THREE.Mesh(sphereGeometry, neptuneMaterial);
+      neptuneMesh.scale.set(1.4, 1.4, 1.4);
+      neptuneMesh.position.x = 55;
+      neptuneMesh.position.y = 25;
+      neptuneMesh.position.z = 15;
+      solarSystem.add(neptuneMesh);
+      objects.push(neptuneMesh);
+
+      //명왕성
+      const plutoMaterial = new THREE.MeshPhongMaterial({
+        color: "brown",
+        emissive: "pink",
+      });
+      const plutoMesh = new THREE.Mesh(sphereGeometry, plutoMaterial);
+      plutoMesh.scale.set(0.5, 0.5, 0.5);
+      plutoMesh.position.x = 65;
+      plutoMesh.position.z = -50;
+      solarSystem.add(plutoMesh);
+      objects.push(plutoMesh);
+
+      function resizeRendererToDisplaySize(renderer) {
+        const canvas = renderer.domElement;
+        const width = canvas.clientWidth;
+        const height = canvas.clientHeight;
+        const needResize = canvas.width !== width || canvas.height !== height;
+        if (needResize) {
+          renderer.setSize(width, height, false);
+        }
+
+        return needResize;
+      }
+
+      function render(time) {
+        time *= 0.001;
+
+        if (resizeRendererToDisplaySize(renderer)) {
+          const canvas = renderer.domElement;
+          camera.aspect = canvas.clientWidth / canvas.clientHeight;
+          camera.updateProjectionMatrix();
+        }
+
+        objects.forEach((obj) => {
+          obj.rotation.y = time;
+        });
+
+        renderer.render(scene, camera);
+
+        requestAnimationFrame(render);
+      }
+      requestAnimationFrame(render);
+    }
+
+    main();
+  </script>
+</html>
